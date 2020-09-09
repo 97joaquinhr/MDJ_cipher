@@ -1,5 +1,5 @@
 text_plano = "Lorem ipsum dolor si"
-clave = "Lorem ipsu"
+clave = "Lorem ip"
 code = "utf8"
 clave_bin = bytes(clave, code)
 
@@ -34,10 +34,18 @@ def cifrado_cesar(tp, desplazamiento):
         cesar+=chr(aux)
     return cesar
 
-desplazamiento = extractKBits(clave_bin[-1],3,1) + 1
+def mover_bytes(llave):
+    mitad1 = llave[:3]
+    mitad2 = llave[3:]
+    llave = mitad2 + mitad1
+    return llave
 
+desplazamiento = extractKBits(clave_bin[-1],3,1) + 1
+print(desplazamiento)
 s = "9"
 print(cifrado_cesar(s,desplazamiento))
 s = "z"
 cesar = cifrado_cesar(text_plano,desplazamiento)
-print(cifrado_cesar(cesar,-6))
+print(cifrado_cesar(cesar,-1*desplazamiento))
+
+print(mover_bytes(clave_bin))
