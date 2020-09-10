@@ -9,22 +9,33 @@ def main():
     # Dividir texto plano
     bloques_txt = dividir_bloques(texto_plano, 10)
 
-    print('BLOQUE A CIFRAR:\t', bloques_txt[0])
 
+    print('BLOQUE A CIFRAR:\t', bloques_txt[0])
+    # Confusion 1: Cesar
     bloques_txt[0] = cifrado_cesar(bloques_txt[0], desplazamiento)
     print('CESAR:\t\t\t',bloques_txt[0])
 
+    # Difusion 1: Mover bits en clave
     clave = mover_bytes(clave)
     print('DIFUSION LLAVE:\t\t', clave)
 
-    subbloques = dividir_bloques(bloques_txt[0], 2)
-    print('SubBloques:\t', subbloques)
-
-    difusion_subbloques = difusion_filas(subbloques)
-    print('DIFUSION 2:\t\t', difusion_subbloques)
+    # Difusion 2
+    bloques_txt[0] = difusion2(bloques_txt[0])
+    print('DIFUSION 2:\t\t', bloques_txt[0])
 
 
-def difusion_filas(subbloques):
+    # DESENCRIPCION
+    bloques_txt[0] = difusion2(bloques_txt[0])
+    print('')
+
+
+def desencriptar_difusion_filas(te):
+    result = ''
+    
+
+
+def difusion2(txt):
+    subbloques = dividir_bloques(txt, 2)
     result = ''
     
     for i in range(2):
