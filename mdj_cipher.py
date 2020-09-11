@@ -7,69 +7,64 @@ DIF_LLAVE_BYTES = 3
 
 def main():
     texto_plano = "Hola amigos jej hol"
-    # texto_plano = "Lorem ipsum dolor si"
     llave = "t amet orci aliquam."
-    # code = "utf8"
-    # llave_bin = bytes(llave, code)
-    # desplazamiento = extractKBits(llave_bin[-1],3,1) + 1
 
     llave = normalizar_llave(llave,TAMANO_BLOQUE)
     
     print(llave)
-    # ------ CIFRADO ------
+    
     # Dividir texto plano
     bloques_txt = dividir_bloques(texto_plano, TAMANO_BLOQUE)
-    print(bloques_txt)
-    print('BLOQUE A CIFRAR:\t', bloques_txt[0])
+    bloques_bytes = bloques_a_bytes(bloques_txt)
+    print(bloques_bytes)
+    # ------ CIFRADO ------
+    print('BLOQUE A CIFRAR:\t', bloques_bytes[0])
     # Confusion 1: Cesar
-    bloques_txt[0] = cifrado_cesar(bloques_txt[0], get_desplazamiento(llave))
-    print('CESAR:\t\t\t',bloques_txt[0])
+    bloques_bytes[0] = cifrado_cesar(bloques_bytes[0], get_desplazamiento(llave))
+    print('CESAR:\t\t\t',bloques_bytes[0])
 
     # Difusion 1: Mover bits en llave
     llave = mover_bytes(llave)
     print('DIFUSION LLAVE:\t\t', llave)
 
     # Difusion 2
-    bloques_txt[0] = difusion2(bloques_txt[0])
-    print('DIFUSION 2:\t\t', bloques_txt[0])
+    bloques_bytes[0] = difusion2(bloques_bytes[0])
+    print('DIFUSION 2:\t\t', bloques_bytes[0])
     
     #Confusion 2
-    bloque_byte = bytes(bloques_txt[0], CODE)
-    print(bloque_byte)
-    bloques_txt[0] = bytes(map(operator.xor, bloque_byte, llave))
-    print(bloques_txt[0])
-    bloques_txt[0] = bloques_txt[0].decode(CODE)
-    print('CONFUSION 2:\t\t', bloques_txt[0])
+    bloques_bytes[0] = bytes(map(operator.xor, bloques_bytes[0], llave))
+    print(bloques_bytes[0])
+    print('CONFUSION 2:\t\t', bloques_bytes[0])
 
     print('#########################')
     # ------ DESCIFRADO ------
-    bloques_txt[0] = desencriptar_difusion2(bloques_txt[0])
-    print('DESCIFRADO - DIFUSION 2:\t',bloques_txt[0])
+    bloques_bytes[0] = desencriptar_difusion2(bloques_bytes[0])
+    print('DESCIFRADO - DIFUSION 2:\t',bloques_bytes[0])
 
     llave = mover_bytes_i(llave)
     print('DESCIFRADO - DIFUSION LLAVE:\t',llave)
 
-    bloques_txt[0] = cifrado_cesar(bloques_txt[0], -1*get_desplazamiento(llave))
-    print('DESCIFRADO - CESAR:\t\t',bloques_txt[0])
+    bloques_bytes[0] = cifrado_cesar(bloques_bytes[0], -1*get_desplazamiento(llave))
+    print('DESCIFRADO - CESAR:\t\t',bloques_bytes[0])
 
-    bloques_txt[0] = bytes(map(operator.xor, bytes(bloques_txt[0], CODE), llave))
-    print('DESCIFRADO - XOR:\t\t', bloques_txt[0].decode(CODE))
+    bloques_bytes[0] = bytes(map(operator.xor, bytes(bloques_bytes[0], CODE), llave))
+    print('DESCIFRADO - XOR:\t\t', bloques_bytes[0])
 
 
 def desencriptar_difusion2(te):
-    result = ''
+    result = b''
     subbloques = dividir_bloques(te, int(TAMANO_BLOQUE/N_FILAS))
     for i in range(len(subbloques[0])):
-        result += subbloques[0][i] + subbloques[1][i]
+        result += bytes([subbloques[0][i] + subbloques[1][i]])
     return result
 
 def difusion2(txt):
     subbloques = dividir_bloques(txt, N_FILAS)
-    result = ''
-    
+    result = b''
     for i in range(N_FILAS):
         for b in subbloques:
-            result += b[i]
+            result += bytes([b[i]])
+            
 
     return result
     
@@ -91,9 +86,8 @@ def extractKBits(num,k,p):
   
      # convert extracted sub-string into decimal again 
      return int(kBitSubStr,2)
-
+"""
 def cifrado_cesar(tp, desplazamiento):
-    
     cesar = ''
     for char in tp:
         aux = ord(char) + desplazamiento
@@ -104,6 +98,14 @@ def cifrado_cesar(tp, desplazamiento):
             aux = ord(' ') - aux
             aux = ord('z') - aux + 1
         cesar+=chr(aux)
+    return cesar
+"""
+
+def cifrado_cesar(bloque_bytes, desplazamiento):
+    cesar = b''
+    for byte in bloque_bytes:
+        aux = byte + desplazamiento
+        cesar += (bytes([aux]))
     return cesar
 
 def mover_bytes(llave):
@@ -132,6 +134,11 @@ def normalizar_llave(llave, n):
             bloques[i] = bytes(map(operator.xor, bloques[i], bloques[i-1]))
     return bloques[-1]
 
+def bloques_a_bytes(bloques_txt):
+    bloques_bytes = []
+    for b in bloques_txt:
+        bloques_bytes.append(bytes(b, CODE))
+    return bloques_bytes
 """
 desplazamiento = extractKBits(llave_bin[-1],3,1) + 1
 print(desplazamiento)
