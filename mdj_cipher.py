@@ -151,17 +151,6 @@ def bloques_a_bytes(bloques_txt):
     for b in bloques_txt:
         bloques_bytes.append(bytes(b, CODE))
     return bloques_bytes
-"""
-desplazamiento = extractKBits(llave_bin[-1],3,1) + 1
-print(desplazamiento)
-s = "9"
-print(cifrado_cesar(s,desplazamiento))
-s = "z"
-cesar = cifrado_cesar(text_plano,desplazamiento)
-print(cifrado_cesar(cesar,-1*desplazamiento))
-
-print(mover_bytes(llave_bin))
-"""
 
 if __name__ == "__main__":
     main()
