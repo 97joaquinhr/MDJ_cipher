@@ -11,11 +11,6 @@ def main():
 
     llave = normalizar_llave(llave,TAMANO_BLOQUE)
     
-    print("1LLave:", llave)
-    llave = mover_bytes(llave)
-    print('1DIFUSION LLAVE:\t\t', llave)
-    llave = mover_bytes_i(llave)
-    print('1DESCIFRADO - DIFUSION LLAVE:\t',llave)
     # Dividir texto plano
     bloques_txt = dividir_bloques(texto_plano, TAMANO_BLOQUE)
     bloques_bytes = bloques_a_bytes(bloques_txt)
@@ -26,6 +21,7 @@ def main():
     bloques_bytes[0] = cifrado_cesar(bloques_bytes[0], get_desplazamiento(llave))
     print('CESAR:\t\t\t',bloques_bytes[0])
     # Difusion 1: Mover bits en llave
+    print('Llave:\t\t\t',llave)
     llave = mover_bytes(llave)
     print('DIFUSION LLAVE:\t\t', llave)
 
@@ -35,28 +31,33 @@ def main():
     
     #Confusion 2
     bloques_bytes[0] = bytes(map(operator.xor, bloques_bytes[0], llave))
-    print('CONFUSION 2:\t\t', bloques_bytes[0])
+    print('CONFUSION 2 XOR:\t\t', bloques_bytes[0])
 
     print('#########################')
     # ------ DESCIFRADO ------
-    bloques_bytes[0] = desencriptar_difusion2(bloques_bytes[0])
-    print('DESCIFRADO - DIFUSION 2:\t',bloques_bytes[0])
+
+    bloques_bytes[0] = bytes(map(operator.xor, bloques_bytes[0], llave))
+    print('DESCIFRADO - XOR:\t\t', bloques_bytes[0])
 
     llave = mover_bytes_i(llave)
     print('DESCIFRADO - DIFUSION LLAVE:\t',llave)
 
+    bloques_bytes[0] = desencriptar_difusion2(bloques_bytes[0])
+    print('DESCIFRADO - DIFUSION 2:\t',bloques_bytes[0])
+
     bloques_bytes[0] = cifrado_cesar(bloques_bytes[0], -1*get_desplazamiento(llave))
     print('DESCIFRADO - CESAR:\t\t',bloques_bytes[0])
 
-    bloques_bytes[0] = bytes(map(operator.xor, bloques_bytes[0], llave))
-    print('DESCIFRADO - XOR:\t\t', bloques_bytes[0])
+   
 
 
 def desencriptar_difusion2(te):
     result = b''
     subbloques = dividir_bloques(te, int(TAMANO_BLOQUE/N_FILAS))
-    for i in range(len(subbloques[0])):
-        result += bytes([subbloques[0][i] + subbloques[1][i]])
+    for i in range(int(TAMANO_BLOQUE/N_FILAS)):
+        print(subbloques[0][i])
+        result += bytes([subbloques[0][i]]) + bytes([subbloques[1][i]])
+    print(result)
     return result
 
 def difusion2(txt):
