@@ -4,18 +4,28 @@ TAMANO_BLOQUE = 8
 CODE = "utf8"
 N_FILAS = 2
 DIF_LLAVE_BYTES = 3
-R = 100 
+R = 3
+
 def main():
+    
+
     texto_plano = "Hola amigos jej hol"
     llave = "t amet orci aliquam."
-    len_original = len(texto_plano)
+
+    cifrado = cifrar(texto_plano, llave)
+    print(cifrado)
+    res = decifrar(cifrado, llave)
+    print(res)
+    
+    
+def cifrar(texto_plano, llave):
     llave = normalizar_llave(llave,TAMANO_BLOQUE)
-    texto_plano = agregar_x(texto_plano)  
+    texto_plano = agregar_espacio(texto_plano)  
     # Dividir texto plano
     bloques_txt = dividir_bloques(texto_plano, TAMANO_BLOQUE)
     bloques_bytes = bloques_a_bytes(bloques_txt)
     print(bloques_bytes)
-    for j in range(R):
+    for _ in range(R):
         for i in range(len(bloques_bytes)):
     # ------ CIFRADO ------
         
@@ -35,10 +45,16 @@ def main():
             #Confusion 2
             bloques_bytes[i] = bytes(map(operator.xor, bloques_bytes[i], llave))
             print('CONFUSION XOR:\t\t', bloques_bytes[i])
+    return(b''.join(bloques_bytes))
+
+def decifrar(cifrado, llave):
+    llave = normalizar_llave(llave,TAMANO_BLOQUE)
+    # Dividir texto plano
+    bloques_bytes = dividir_bloques(cifrado, TAMANO_BLOQUE)
     print(bloques_bytes)
-    print('#########################')
-    # ------ DESCIFRADO ------
-    for j in range(R):
+    for _ in range(R*len(bloques_bytes)):
+        llave = mover_bytes(llave)
+    for _ in range(R):
         for i in reversed(range(len(bloques_bytes))):
         
             print('Llave:\t\t\t',llave)
@@ -55,15 +71,14 @@ def main():
             print('DESCIFRADO - CESAR:\t\t',bloques_bytes[i])
     for i in range(len(bloques_bytes)):
         bloques_bytes[i] = bloques_bytes[i].decode(CODE)
-    print(''.join(bloques_bytes)[:len_original])
-    
+    return(''.join(bloques_bytes))
 
-def agregar_x(texto):
+def agregar_espacio(texto):
     mod_texto = len(texto) % TAMANO_BLOQUE
     if mod_texto != 0:
         dif = TAMANO_BLOQUE - mod_texto
         # agregar x como dummy
-        texto += 'x'*dif  
+        texto += ' '*dif  
     return texto
 
 
@@ -101,20 +116,6 @@ def extractKBits(num,k,p):
   
      # convert extracted sub-string into decimal again 
      return int(kBitSubStr,2)
-"""
-def cifrado_cesar(tp, desplazamiento):
-    cesar = ''
-    for char in tp:
-        aux = ord(char) + desplazamiento
-        if aux > ord('z'):
-            aux = aux - ord('z')
-            aux = ord(' ') + aux - 1
-        if aux < ord(' '):
-            aux = ord(' ') - aux
-            aux = ord('z') - aux + 1
-        cesar+=chr(aux)
-    return cesar
-"""
 
 def cifrado_cesar(bloque_bytes, desplazamiento):
     cesar = b''
@@ -137,7 +138,7 @@ def dividir_bloques(texto, n):
     return [texto[i:i+n] for i in range(0, len(texto), n)]
 
 def normalizar_llave(llave, n):
-    llave = agregar_x(llave)
+    llave = agregar_espacio(llave)
     bloques = dividir_bloques(llave,n)
     for i in range(len(bloques)):
         bloques[i] = bytes(bloques[i], CODE)
