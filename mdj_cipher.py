@@ -8,14 +8,31 @@ R = 3
 
 def main():
     
+    print('###########\nCIFRADO MDJ\n###########\n\n')
+    print('MENU:\n1) Cifrar \n2) Descifrar\n')
+    decision = input('Ingrese una opcion: ')
 
-    texto_plano = "Hola amigos jej hol"
-    llave = "t amet orci aliquam."
+    
 
-    cifrado = cifrar(texto_plano, llave)
-    print(cifrado)
-    res = decifrar(cifrado, llave)
-    print(res)
+    if decision == '1':
+        texto_plano = input('Ingrese el texto a cifrar: ')
+        llave = input('Ingrese la llave: ')
+        cifrado = cifrar(texto_plano, llave)
+        print('\n\n\n\nTEXTO CIFRADO:\t',cifrado)
+        return 0
+
+    if decision == '2':
+        texto_cifrado = input('Ingrese el texto a descifrar: ')
+        llave = input('Ingrese la llave: ')
+        texto_cifrado = bytes(texto_cifrado, CODE)
+
+        res = decifrar(texto_cifrado, llave)
+        print('\n\n\n\nTEXTO DESCIFRADO:\t',cifrado)
+
+    
+
+    #res = decifrar(cifrado, llave)
+    #print(res)
     
     
 def cifrar(texto_plano, llave):
