@@ -1,4 +1,6 @@
 import operator
+from codecs import encode
+
 
 TAMANO_BLOQUE = 8
 CODE = "utf8"
@@ -17,24 +19,24 @@ def main():
     if decision == '1':
         texto_plano = input('Ingrese el texto a cifrar: ')
         llave = input('Ingrese la llave: ')
+        print(texto_plano)
         cifrado = cifrar(texto_plano, llave)
-        print('\n\n\n\nTEXTO CIFRADO:\t',cifrado)
+        print('\n\nTEXTO CIFRADO:\t',cifrado)
         return 0
 
     if decision == '2':
         texto_cifrado = input('Ingrese el texto a descifrar: ')
         llave = input('Ingrese la llave: ')
         texto_cifrado = bytes(texto_cifrado, CODE)
-
+        texto_cifrado = remover_backslash(texto_cifrado)
         res = decifrar(texto_cifrado, llave)
-        print('\n\n\n\nTEXTO DESCIFRADO:\t',cifrado)
+        print('\n\nTEXTO DESCIFRADO:\t',res)
 
-    
 
-    #res = decifrar(cifrado, llave)
-    #print(res)
-    
-    
+
+def remover_backslash(texto_cifrado):
+    return texto_cifrado.decode('unicode-escape').encode('ISO-8859-1')
+
 def cifrar(texto_plano, llave):
     llave = normalizar_llave(llave,TAMANO_BLOQUE)
     texto_plano = agregar_espacio(texto_plano)  
@@ -46,22 +48,22 @@ def cifrar(texto_plano, llave):
         for i in range(len(bloques_bytes)):
     # ------ CIFRADO ------
         
-            print('BLOQUE A CIFRAR:\t', bloques_bytes[i])
+            # print('BLOQUE A CIFRAR:\t', bloques_bytes[i])
             # Confusion 1: Cesar
             bloques_bytes[i] = cifrado_cesar(bloques_bytes[i], get_desplazamiento(llave))
-            print('CESAR:\t\t\t',bloques_bytes[i])
+            # print('CESAR:\t\t\t',bloques_bytes[i])
             # Difusion 1: Mover bits en llave
-            print('Llave:\t\t\t',llave)
+            # print('Llave:\t\t\t',llave)
             llave = mover_bytes(llave)
-            print('DIFUSION LLAVE:\t\t', llave)
+            # print('DIFUSION LLAVE:\t\t', llave)
 
             # Difusion 2
             bloques_bytes[i] = difusion2(bloques_bytes[i])
-            print('DIFUSION 2:\t\t', bloques_bytes[i])
+            # print('DIFUSION 2:\t\t', bloques_bytes[i])
             
             #Confusion 2
             bloques_bytes[i] = bytes(map(operator.xor, bloques_bytes[i], llave))
-            print('CONFUSION XOR:\t\t', bloques_bytes[i])
+            # print('CONFUSION XOR:\t\t', bloques_bytes[i])
     return(b''.join(bloques_bytes))
 
 def decifrar(cifrado, llave):
@@ -74,18 +76,18 @@ def decifrar(cifrado, llave):
     for _ in range(R):
         for i in reversed(range(len(bloques_bytes))):
         
-            print('Llave:\t\t\t',llave)
+            # print('Llave:\t\t\t',llave)
             bloques_bytes[i] = bytes(map(operator.xor, bloques_bytes[i], llave))
-            print('DESCIFRADO - XOR:\t\t', bloques_bytes[i])
+            # print('DESCIFRADO - XOR:\t\t', bloques_bytes[i])
 
             llave = mover_bytes_i(llave)
-            print('DESCIFRADO - DIFUSION LLAVE:\t',llave)
+            # print('DESCIFRADO - DIFUSION LLAVE:\t',llave)
 
             bloques_bytes[i] = desencriptar_difusion2(bloques_bytes[i])
-            print('DESCIFRADO - DIFUSION 2:\t',bloques_bytes[i])
+            # print('DESCIFRADO - DIFUSION 2:\t',bloques_bytes[i])
 
             bloques_bytes[i] = cifrado_cesar(bloques_bytes[i], -1*get_desplazamiento(llave))
-            print('DESCIFRADO - CESAR:\t\t',bloques_bytes[i])
+            # print('DESCIFRADO - CESAR:\t\t',bloques_bytes[i])
     for i in range(len(bloques_bytes)):
         bloques_bytes[i] = bloques_bytes[i].decode(CODE)
     return(''.join(bloques_bytes))
