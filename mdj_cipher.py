@@ -19,7 +19,6 @@ def main():
     if decision == '1':
         texto_plano = input('Ingrese el texto a cifrar: ')
         llave = input('Ingrese la llave: ')
-        print(texto_plano)
         cifrado = cifrar(texto_plano, llave)
         print('\n\nTEXTO CIFRADO:\t',cifrado)
         return 0
@@ -33,7 +32,6 @@ def main():
         print('\n\nTEXTO DESCIFRADO:\t',res)
 
 
-
 def remover_backslash(texto_cifrado):
     return texto_cifrado.decode('unicode-escape').encode('ISO-8859-1')
 
@@ -43,7 +41,7 @@ def cifrar(texto_plano, llave):
     # Dividir texto plano
     bloques_txt = dividir_bloques(texto_plano, TAMANO_BLOQUE)
     bloques_bytes = bloques_a_bytes(bloques_txt)
-    print(bloques_bytes)
+    # print(bloques_bytes)
     for _ in range(R):
         for i in range(len(bloques_bytes)):
     # ------ CIFRADO ------
@@ -70,7 +68,7 @@ def decifrar(cifrado, llave):
     llave = normalizar_llave(llave,TAMANO_BLOQUE)
     # Dividir texto plano
     bloques_bytes = dividir_bloques(cifrado, TAMANO_BLOQUE)
-    print(bloques_bytes)
+    # print(bloques_bytes)
     for _ in range(R*len(bloques_bytes)):
         llave = mover_bytes(llave)
     for _ in range(R):
